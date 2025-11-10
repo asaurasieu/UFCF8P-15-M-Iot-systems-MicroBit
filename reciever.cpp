@@ -9,7 +9,11 @@ void onData(MicroBitEvent)
 	
 	if (command == 1)
 	{
-		uBit.io.P0.setLEDValue(1);
+		uBit.io.P0.setDigitalValue(1);
+	}
+	else if (command == 2)
+	{
+		uBit.io.P0.setDigitalValue(0);
 	}
 }
 
