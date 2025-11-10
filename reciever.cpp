@@ -2,20 +2,14 @@
 
 MicroBit uBit;
 
-void onData(MicroBitEvent e)
+void onData(MicroBitEvent)
 {
-	ManagedString s = uBit.radio.datagram.recv();
+	PacketBuffer p = uBit.radio.datagram.recv(); 
+	uint8_t command = p[0];
 	
-	if (s == "1")
+	if (command == 1)
 	{
-		uBit.io.P0.setServoValue(0);
-		uBit.display.print("A");
-	}
-	
-	if (s == "2")
-	{
-		uBit.io.P0.setServoVAlue(180);
-		uBit.display.print("B");
+		uBit.io.P0.setServoValue(1);
 	}
 }
 
