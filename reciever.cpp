@@ -9,7 +9,7 @@ void onData(MicroBitEvent)
 	
 	if (command == 1)
 	{
-		uBit.io.P0.setServoValue(1);
+		uBit.io.P0.setLEDValue(1);
 	}
 }
 
