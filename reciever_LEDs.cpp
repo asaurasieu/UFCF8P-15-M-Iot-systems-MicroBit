@@ -5,7 +5,7 @@ MicroBit uBit;
 
 void turnOFFLEDs()
 {
-	uBit.io.PO.setDigitalValue(0); 
+	uBit.io.P0.setDigitalValue(0); 
 	uBit.io.P1.setDigitalValue(0); 
 	uBit.io.P2.setDigitalValue(0);
 }
