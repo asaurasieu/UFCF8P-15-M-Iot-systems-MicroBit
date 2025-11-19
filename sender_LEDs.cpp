@@ -39,7 +39,7 @@ int main()
 	uBit.buttonB.setEventConfiguration(MICROBIT_BUTTON_ALL_EVENTS); 
 
 	uBit.messageBus.listen(MICROBIT_ID_BUTTON_A, MICROBIT_EVT_ANY, onButtonA); 
-	uBit.messageBus.listen(MICROBIT_ID_BUTTON_B MICROBIT_EVT_ANY, onButtonB); 
+	uBit.messageBus.listen(MICROBIT_ID_BUTTON_B, MICROBIT_EVT_ANY, onButtonB); 
 	
 	uBit.display.scroll("Ready"); 
 	uBit.display.print("Start"); 

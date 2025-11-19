@@ -1,0 +1,55 @@
+Put the following files in the source file of the microbit-v2-samples 
+
+DPK.cpp
+DPK.h 
+picosha2.h 
+lightMD5.cpp 
+lightMD5.h 
+testDPK.cpp 
+
+compile it us normal > python build.py 
+
+Drag the MICROBIT.hex and flash it to the MicroBit. 
+
+Now the testing involves the following: 
+
+1. Sender sends the plain command 
+2. Reciever uses the command as salt 
+3. Reciever derives DPK 
+4. Next Step = AES will replace the plain command 
+
+Next step for the AES encryption will require: 
+
+Sender
+Turn command into plaintext buffer 
+AES encryption using DPK 
+Send{salt, ciphertext}
+
+Reciever 
+Recompute DPK 
+AES decrypt ciphertext 
+Get original command 
+Drive LEDs 
+
+Shared between Sender & Reciever: 
+
+1. SHARED_SECRET = "IOT2026" 
+2. DPK ALGORITHM 
+3. AES ALGORITHM 
+4. RANDOM SALT PER MESSAGE 
+
+If the receiver DPK is correct, the sender DPK will match exactly. 
+
+The testSenderDPK.cpp: 
+Runs on the sender MicroBit
+Uses button A to generate a salt 
+Computes the DPK 
+Shows the nibble on the MicroBit screen 
+Sends the salt for testing 
+
+THE EXPECTED RESULTS WOULD BE THAT: 
+
+SENDER SHOWS: SOME LETTER -> e.g K 
+RECEIVER SHOWS: THE SAME LETTER -> e.g K 
+
+This proves that both the same shared secret, salt, sha256, md5, DPK and key derivation works correctly on both devices. 

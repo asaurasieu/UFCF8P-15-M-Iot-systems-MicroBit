@@ -39,11 +39,11 @@ int main()
 {
 	uBit.init();
 
-	uBit.display.scroll("Choose LED color"); 
+	uBit.display.scroll("CHOOSE COLOR"); 
 	uBit.sleep(500);
 
 	// Display button choices 
-	uBit.display.scroll("A=Red B=Green AA=Yellow"); 
+	uBit.display.scroll("A=R B=G AA=Y"); 
 
 	// Message listener for radio communication 
 	uBit.messageBus.listen(MICROBIT_ID_RADIO, MICROBIT_RADIO_EVT_DATAGRAM, onData);
