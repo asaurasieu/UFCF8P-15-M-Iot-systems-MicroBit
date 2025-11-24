@@ -37,7 +37,7 @@ void makeKey(const uint8_t *salt, size_t saltLen, uint8_t key[32])
     uint8_t secretHash[32];
     uint8_t K1[16]; 
     uint8_t K12[16]; 
-    uint8_t K2[1]; 
+    uint8_t K2[16]; 
     uint8_t K3[16]; 
 
 
