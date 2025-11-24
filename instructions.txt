@@ -1,4 +1,5 @@
-Put the following files in the source file of the microbit-v2-samples 
+Put the following files in the source file of the microbit-v2-samples
+In both sender and reciever chaging only the test.cpp files corresponding to each one.  
 
 DPK.cpp
 DPK.h 
