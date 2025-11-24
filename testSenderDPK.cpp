@@ -1,6 +1,10 @@
 #include "MicroBit.h"
 #include "DPK.h"
 
+MicroBit uBit; 
+
+PacketBuffer b(1); 
+
 void generateAndShowDPK(uint8_t commandValue)
 {
 
@@ -22,17 +26,21 @@ void onButtonA(MicroBitEvent e)
 
         generateAndShowDPK(1);
 
+        uBit.sleep(1000);
+
         uBit.radio.datagram.send(b);
-        uBit.display.print("R");
+        uBit.display.scroll("R");
     }
     else if (e.value == MICROBIT_BUTTON_EVT_LONG_CLICK)
     {
         b[0] = 3;
 
         generateAndShowDPK(3);
-        uBit.radio.datagram.send(b);
 
-        uBit.display.print("Y");
+        uBit.sleep(1000);
+
+        uBit.radio.datagram.send(b);
+        uBit.display.scroll("Y");
     }
 }
 
@@ -43,9 +51,11 @@ void onButtonB(MicroBitEvent e)
         b[0] = 2;
 
         generateAndShowDPK(2);
-        uBit.radio.datagram.send(b);
+       
+        uBit.sleep(1000);
 
-        uBit.display.print("G");
+        uBit.radio.datagram.send(b);
+        uBit.display.scroll("G");
     }
 }
 

@@ -24,23 +24,24 @@ void onData(MicroBitEvent)
     char nibbleSymbol = 'A' + (key[0] & 0x0F); 
     uBit.display.print(nibbleSymbol); 
 
+    uBit.sleep(1000);
 
     turnOFFLEDs(); 
 
     if (command == 1)
     {
         uBit.io.P0.setDigitalValue(1);
-        uBit.display.print("R");
+        uBit.display.scroll("R");
     }
     else if (command == 2)
     {
         uBit.io.P1.setDigitalValue(1);
-        uBit.display.print("G");
+        uBit.display.scroll("G");
     }
     else if (command == 3)
     {
         uBit.io.P2.setDigitalValue(1);
-        uBit.display.print("Y");
+        uBit.display.scroll("Y");
     }
 
 }
