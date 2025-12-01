@@ -1,0 +1,30 @@
+
+
+Tone and speaker references:  
+https://lancaster-university.github.io/microbit-docs/ubit/io/#setanalogperiodus
+https://lancaster-university.github.io/microbit-docs/ubit/io/#setanalogvalue
+
+Set Digital Value for LEDS: 
+https://lancaster-university.github.io/microbit-docs/ubit/io/#setdigitalvalue
+
+
+uBit Radio documentation 
+https://lancaster-university.github.io/microbit-docs/ubit/radio/
+
+uBit buttons documentation: 
+https://lancaster-university.github.io/microbit-docs/ubit/io/#message-bus-events
+https://lancaster-university.github.io/microbit-docs/ubit/button/
+
+uBit sender / reciever 
+https://lancaster-university.github.io/microbit-docs/ubit/messageBus/
+
+tiny-AES-c  (Encryption)
+https://github.com/kokke/tiny-AES-c
+
+PicoSHA2  (Key Generation SHA256)
+https://github.com/okdshin/PicoSHA2.git
+
+
+Light-MD5 (Key Generation MD5)
+https://github.com/michelerenzullo/Light-MD5
+

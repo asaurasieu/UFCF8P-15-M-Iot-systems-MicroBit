@@ -1,0 +1,43 @@
+For design purposes we will be using a AES open source library which we will adapt for the current commands. 
+
+This library is called tiny-AES-c, its build in pure C and the size is around 10KB which is lightweight for the microbit implementation. 
+It has been tested in a variety of platforms, including 8-bit microcontrollers, 32 bit ARM and 64 bit x86, provides three standard AES key sizes (128,192 or 256) and implements AES
+block cipher in several modes (ECB,CBR and CTR). 
+
+It provides the API which can be used easily inside our project and contains the necessary header files and code.
+
+
+THE ORIGINAL REPO API CODE 
+
+/* Initialize context calling one of: */
+void AES_init_ctx(struct AES_ctx* ctx, const uint8_t* key);
+void AES_init_ctx_iv(struct AES_ctx* ctx, const uint8_t* key, const uint8_t* iv);
+
+/* ... or reset IV at random point: */
+void AES_ctx_set_iv(struct AES_ctx* ctx, const uint8_t* iv);
+
+/* Then start encrypting and decrypting with the functions below: */
+void AES_ECB_encrypt(const struct AES_ctx* ctx, uint8_t* buf);
+void AES_ECB_decrypt(const struct AES_ctx* ctx, uint8_t* buf);
+
+void AES_CBC_encrypt_buffer(struct AES_ctx* ctx, uint8_t* buf, size_t length);
+void AES_CBC_decrypt_buffer(struct AES_ctx* ctx, uint8_t* buf, size_t length);
+
+/* Same function for encrypting as for decrypting in CTR mode */
+void AES_CTR_xcrypt_buffer(struct AES_ctx* ctx, uint8_t* buf, size_t length);
+
+
+The library defines a context struct AES_ctx which stores expanded key shedule. 
+
+API functions let you initialize the context:
+
+AES_init_ctx(&ctx, key) — for plain key-based AES. 
+AES_init_ctx_iv(&ctx, key, iv) — for CBC or CTR mode (needs IV). 
+
+Then you can call encryption/decryption depending on mode:
+
+ECB (Electronic Code Book): AES_ECB_encrypt(&ctx, buf) / AES_ECB_decrypt(&ctx, buf). Works block-by-block; no chaining or IV. 
+CBC (Cipher Block Chaining): AES_CBC_encrypt_buffer(&ctx, buf, length) / decrypt. Encrypts whole buffer (must be multiple of 16 bytes). 
+CTR (Counter mode): AES_CTR_xcrypt_buffer(&ctx, buf, length) — encryption and decryption are the same operation (XORing keystream). 
+
+
