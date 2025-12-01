@@ -36,17 +36,17 @@ void play_tone(uint8_t command)
 
 void encrypt(uint8_t commandValue)
 {
-    uint8_t salt = {command}; 
-    uint8_t dpk; 
+    uint8_t salt = {commandValue}; 
+    uint8_t dpk[32]; 
     makeKey(salt, 1, dpk); 
 
-    char nibbleSymbol = 'A' + (key[0] & 0x0F);
+    char nibbleSymbol = 'A' + (dpk[0] & 0x0F);
     uBit.display.print(nibbleSymbol);
     uBit.sleep(500); 
 
     uint8_t plaintext[16]; 
     memset(plaintext, 0, 16); 
-    plaintext[0] = command; 
+    plaintext[0] = commandValue; 
 
     // Initialize AES context with dpk 
     struct AES_ctx ctx; 
@@ -61,12 +61,12 @@ void encrypt(uint8_t commandValue)
     b[0] = salt[0]; 
 
     for (int i = 0; i < 16; i++){
-        buffer[i + 1] = ciphertext[i]; 
+        b[i + 1] = ciphertext[i]; 
    }
 
     uBit.radio.datagram.send(b); 
 
-    play_tone(command); 
+    play_tone(commandValue); 
 }
 
 void onButtonA(MicroBitEvent e)
@@ -74,14 +74,12 @@ void onButtonA(MicroBitEvent e)
     if (e.value == MICROBIT_BUTTON_EVT_CLICK)
     {
         
-        generateAndShowDPK(1);
         uBit.sleep(1000);
         encrypt(1);
         uBit.display.scroll("R");
     }
     else if (e.value == MICROBIT_BUTTON_EVT_LONG_CLICK)
     {
-        generateAndShowDPK(3);
         uBit.sleep(1000);
         encrypt(3);
         uBit.display.scroll("Y");
@@ -92,7 +90,6 @@ void onButtonB(MicroBitEvent e)
 {
     if (e.value == MICROBIT_BUTTON_EVT_CLICK)
     {
-        generateAndShowDPK(2);
         uBit.sleep(1000);
         encrypt(2);
         uBit.display.scroll("G");
