@@ -110,8 +110,6 @@ int main()
     uBit.messageBus.listen(MICROBIT_ID_RADIO, MICROBIT_RADIO_EVT_DATAGRAM, onData);
     uBit.radio.enable();
 
-    uBit.speaker.on(); 
-
     turnOFFLEDs(); 
 
     while (1)

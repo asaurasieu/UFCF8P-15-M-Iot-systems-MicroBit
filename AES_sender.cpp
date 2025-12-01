@@ -104,8 +104,6 @@ int main()
     uBit.init();
     uBit.radio.enable();
 
-    uBit.speaker.on(); 
-
     uBit.buttonA.setEventConfiguration(MICROBIT_BUTTON_ALL_EVENTS);
     uBit.buttonB.setEventConfiguration(MICROBIT_BUTTON_ALL_EVENTS);
 
