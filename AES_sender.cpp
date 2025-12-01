@@ -11,28 +11,28 @@ MicroBit uBit;
 
 void play_tone(uint8_t command)
 {
-    int freq 
+    int frequency; 
     
     if (command == 1){
 
-        freq = r_freq; 
+        frequency = r_freq; 
 
     } else if (command == 2){
-        freq = g_freq; 
+        frequency = g_freq; 
 
     } else if (command == 3){
-        freq = y_freq; 
+        frequency = y_freq; 
     }else {
         return; 
     }
 
-    uBit.speaker.on(); 
     uBit.io.P0.setAnalogValue(225); 
-    uBit.io.P0.setAnalogPeriodUS(1000000 / frequency); 
+    uBit.io.P0.setAnalogPeriodUs(1000000 / frequency); 
     uBit.io.P0.setAnalogValue(128); 
     uBit.sleep(duration); 
     uBit.io.P0.setAnalogValue(0); 
 }
+
 
 void encrypt(uint8_t commandValue)
 {
