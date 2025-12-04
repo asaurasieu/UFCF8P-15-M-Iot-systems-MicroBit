@@ -4,53 +4,27 @@
 
 MicroBit uBit; 
 
-#define r_freq 440
-#define g_freq 880
-#define y_freq 1320
-#define duration 500 
 
-void play_tone(uint8_t command)
+void verification(char letter)
 {
-    int frequency; 
-    
-    if (command == 1){
-
-        frequency = r_freq; 
-
-    } else if (command == 2){
-        frequency = g_freq; 
-
-    } else if (command == 3){
-        frequency = y_freq; 
-    } else {
-        return; 
-    }
-
-    uBit.io.P0.setAnalogValue(225); 
-    uBit.io.P0.setAnalogPeriodUs(1000000 / frequency); 
-    uBit.io.P0.setAnalogValue(128); 
-    uBit.sleep(duration); 
-    uBit.io.P0.setAnalogValue(0); 
+    uBit.display.print(letter); 
+    uBit.sleep(200); 
 }
 
 
-void encrypt(uint8_t commandValue)
+void generate_key(uint8_t commandValue, uint8_t dpk[32], char* nibble)
 {
     uint8_t salt[1] = {commandValue}; 
-    uint8_t dpk[32]; 
-    makeKey(salt, 1, dpk); 
+    makekey(salt, 1, dpk); 
+    *nibble = 'A' + (dpk[0] & 0x0F); 
+}
 
-    char nibbleSymbol = 'A' + (dpk[0] & 0x0F);
-    uBit.display.print(nibbleSymbol);
-    uBit.sleep(500); 
-
+void encrypt_command(uint8_t commmandValue, uint8_t ciphertext[16], uint8_t dpk[32])
+{
     uint8_t plaintext[16]; 
     memset(plaintext, 0, 16); 
     plaintext[0] = commandValue; 
 
-    // DEBUG 
-    uBit.display.scroll("ENC");
-    uBit.sleep(300);
 
     // Initialize AES context with dpk 
     struct AES_ctx ctx; 
@@ -60,12 +34,10 @@ void encrypt(uint8_t commandValue)
     uint8_t ciphertext[16]; 
     memcpy(ciphertext, plaintext, 16); 
     AES_ECB_encrypt(&ctx, ciphertext); 
+}
 
-    // DEBUG
-    uBit.display.scroll("E");
-    uBit.display.print((char) (ciphertext[0]>>4)); 
-    uBit.sleep(300);
-
+void send_message(uint8_t commmandValue, uint8_t ciphertext[16])
+{
     PacketBuffer b(17); 
     b[0] = salt[0]; 
 
@@ -75,12 +47,21 @@ void encrypt(uint8_t commandValue)
 
    // DEBUG Sent
     uBit.radio.datagram.send(b); 
-    uBit.display.scroll("TX");
-    uBit.sleep(300); 
+}
 
+void encrypt(uint8_t commandValue)
+{
+    uint8_t dpk[32];
+    char nibble;
+    generate_key(commandValue, dpk, &nibble);
+    display_letter(nibble);
 
+    display_letter('E');  // Encryption
+    uint8_t ciphertext[16];
+    encrypt_command(commandValue, ciphertext, dpk);
 
-    play_tone(commandValue); 
+    display_letter('T');  // Transmit
+    send_message(commandValue, ciphertext);
 }
 
 void onButtonA(MicroBitEvent e)
@@ -90,13 +71,13 @@ void onButtonA(MicroBitEvent e)
         
         uBit.sleep(1000);
         encrypt(1);
-        uBit.display.scroll("R");
+        uBit.display.print("R");
     }
     else if (e.value == MICROBIT_BUTTON_EVT_LONG_CLICK)
     {
         uBit.sleep(1000);
         encrypt(3);
-        uBit.display.scroll("Y");
+        uBit.display.print("Y");
     }
 }
 
@@ -106,7 +87,7 @@ void onButtonB(MicroBitEvent e)
     {
         uBit.sleep(1000);
         encrypt(2);
-        uBit.display.scroll("G");
+        uBit.display.print("G");
     }
 }
 
@@ -120,9 +101,6 @@ int main()
 
     uBit.messageBus.listen(MICROBIT_ID_BUTTON_A, MICROBIT_EVT_ANY, onButtonA);
     uBit.messageBus.listen(MICROBIT_ID_BUTTON_B, MICROBIT_EVT_ANY, onButtonB);
-
-    uBit.display.scroll("SENDER AES");
-    uBit.display.print("Ready");
 
     while (1)
     {

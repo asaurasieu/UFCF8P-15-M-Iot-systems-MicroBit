@@ -9,30 +9,26 @@ MicroBit uBit;
 #define y_freq 1320
 #define duration 500 
 
-void play_tone(uint8_t command)
+
+
+void verification(char letter)
 {
-    int frequency; 
-    
-    if (command == 1){
-
-        frequency = r_freq; 
-
-    } else if (command == 2){
-        frequency = g_freq; 
-
-    } else if (command == 3){
-        frequency = y_freq; 
-    }else {
-        return; 
-    }
-
-    uBit.io.P1.setAnalogValue(225); 
-    uBit.io.P1.setAnalogPeriodUs(1000000 / frequency); 
-    uBit.io.P1.setAnalogValue(128); 
-    uBit.sleep(duration); 
-    uBit.io.P1.setAnalogValue(0); 
+    uBit.display.print(letter); 
+    uBit.sleep(200); 
 }
 
+
+
+void play_tone(uint8_t command)
+{
+    if (command == 1){
+        uBit.speaker.playTone(r_freq, duration);
+    } else if (command == 2){
+        uBit.speaker.playTone(g_freq, duration);
+    } else if (command == 3){
+        uBit.speaker.playTone(y_freq, duration);
+    }
+}
 
 void turnOFFLEDs()
 {
@@ -41,15 +37,38 @@ void turnOFFLEDs()
     uBit.io.P2.setDigitalValue(0); 
 }
 
+void turnONLED(uint8_t command)
+{
+    if (command == 1){
+        uBit.io.P0.setDigitalValue(1);
+    } else if (command == 2){
+        uBit.io.P1.setDigitalValue(1);
+    } else if (command == 3){
+        uBit.io.P2.setDigitalValue(1);
+    }
+}
+
+void generate_key(uint8_t salt_value, uint8_t key[32], char* nibble)
+{
+    uint8_t salt_buf[1] = {salt_value}; 
+    makeKey(salt_buf, 1, key);
+    *nibble = 'A' + (key[0] & 0x0F);
+}
+
+void decrypt_command(uint8_t ciphertext[16], uint8_t key[32], uint8_t plaintext[16])
+{
+    struct AES_ctx ctx; 
+    AES_init_ctx(&ctx, key); 
+    memcpy(plaintext, ciphertext, 16); 
+    AES_ECB_decrypt(&ctx, plaintext);
+}
+
+
 void onData(MicroBitEvent)
 {
     // Recieve encrypted message salt (1) + ciphertext(16)
     PacketBuffer p = uBit.radio.datagram.recv(); 
-    
-    // DEBUG Recieved 
-    uBit.display.scroll("RX");
-    uBit.sleep(300);
-
+    verification('R');
 
     uint8_t salt = p[0]; 
     uint8_t ciphertext[16]; 
@@ -58,74 +77,45 @@ void onData(MicroBitEvent)
         ciphertext[i] = p[i + 1]; 
     }
 
-    // Regenerate the DPK using the recieved command as salt 
-    uint8_t salt_buf[1] = {salt}; 
-    uint8_t key[32]; 
-    makeKey(salt_buf, 1, key);
+    uint8_t key[32];
+    char nibble;
+    generate_key(salt, key, &nibble);
+    verification(nibble);
 
-    // Display the first nibble of the dpk for testing 
-    char nibbleSymbol = 'A' + (key[0] & 0x0F); 
-    uBit.display.print(nibbleSymbol); 
-
-    // DEBUG Key Regenerated 
-    uBit.display.scroll("KEY"); 
-    uBit.sleep(1000);
-
-    // Initialize AES context with regenerated DPK 
-    struct AES_ctx ctx; 
-    AES_init_ctx(&ctx, key); 
-
-
-    // Decrypt the ciphertext 
+    verification('D');
     uint8_t plaintext[16]; 
-    memcpy(plaintext, ciphertext, 16); 
-    AES_ECB_decrypt(&ctx, plaintext); 
+    decrypt_command(ciphertext, key, plaintext);
 
-
-    // DEBUG Show Decryption Completed 
-    uBit.display.scroll("D");
-    uBit.display.print((char)('0' + (plaintext[0]>> 4))); // command value 
-    uBit.sleep(300);
-
-    // Extract the command from plaintext[0]
-    uint8_t command = plaintext[0]; 
+    uint8_t command = plaintext[0];
 
     turnOFFLEDs(); 
-
     if (command == 1)
     {
-        uBit.io.P0.setDigitalValue(1);
-        uBit.display.scroll("R");
+        turnONLED(1);
+        verification('R');
         play_tone(1);
     }
     else if (command == 2)
     {
-        uBit.io.P1.setDigitalValue(1);
-        uBit.display.scroll("G");
+        turnONLED(2);
+        verification('G');
         play_tone(2); 
     }
     else if (command == 3)
     {
-        uBit.io.P2.setDigitalValue(1);
-        uBit.display.scroll("Y");
+        turnONLED(3);
+        verification('Y');
         play_tone(3); 
     }
     else
     {
-        // Show if the command is invalid 
-        uBit.display.scroll("?");
-        uBit.display.print((char)('0' + command)); 
-        uBit.sleep(500); 
+        verification('F');
     }
-
 }
 
 int main()
 {
     uBit.init(); 
-
-    uBit.display.scroll("RECEIVER AES"); 
-    uBit.sleep(500); 
 
     uBit.messageBus.listen(MICROBIT_ID_RADIO, MICROBIT_RADIO_EVT_DATAGRAM, onData);
     uBit.radio.enable();

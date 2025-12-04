@@ -28,3 +28,6 @@ https://github.com/okdshin/PicoSHA2.git
 Light-MD5 (Key Generation MD5)
 https://github.com/michelerenzullo/Light-MD5
 
+
+Sound MicroBit documentation 
+https://microbit-micropython.readthedocs.io/en/v2-docs/speaker.html 
