@@ -15,11 +15,11 @@ void verification(char letter)
 void generate_key(uint8_t commandValue, uint8_t dpk[32], char* nibble)
 {
     uint8_t salt[1] = {commandValue}; 
-    makekey(salt, 1, dpk); 
+    makeKey(salt, 1, dpk); 
     *nibble = 'A' + (dpk[0] & 0x0F); 
 }
 
-void encrypt_command(uint8_t commmandValue, uint8_t ciphertext[16], uint8_t dpk[32])
+void encrypt_command(uint8_t commandValue, uint8_t ciphertext[16], uint8_t dpk[32])
 {
     uint8_t plaintext[16]; 
     memset(plaintext, 0, 16); 
@@ -31,15 +31,14 @@ void encrypt_command(uint8_t commmandValue, uint8_t ciphertext[16], uint8_t dpk[
     AES_init_ctx(&ctx, dpk); 
 
     // Encrypt plaintext using AES-128 ECB mode 
-    uint8_t ciphertext[16]; 
     memcpy(ciphertext, plaintext, 16); 
     AES_ECB_encrypt(&ctx, ciphertext); 
 }
 
-void send_message(uint8_t commmandValue, uint8_t ciphertext[16])
+void send_message(uint8_t commandValue, uint8_t ciphertext[16])
 {
     PacketBuffer b(17); 
-    b[0] = salt[0]; 
+    b[0] = commandValue; 
 
     for (int i = 0; i < 16; i++){
         b[i + 1] = ciphertext[i]; 
@@ -54,13 +53,13 @@ void encrypt(uint8_t commandValue)
     uint8_t dpk[32];
     char nibble;
     generate_key(commandValue, dpk, &nibble);
-    display_letter(nibble);
+    verification(nibble);
 
-    display_letter('E');  // Encryption
+    verification('E');  // Encryption
     uint8_t ciphertext[16];
     encrypt_command(commandValue, ciphertext, dpk);
 
-    display_letter('T');  // Transmit
+    verification('T');  // Transmit
     send_message(commandValue, ciphertext);
 }
 
