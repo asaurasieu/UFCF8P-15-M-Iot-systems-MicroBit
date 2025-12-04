@@ -84,7 +84,7 @@ void onData(MicroBitEvent)
 
     // DEBUG Show Decryption Completed 
     uBit.display.scroll("D");
-    uBit.display.print((char)('0' + (plaintext[0]>> 4))) // command value 
+    uBit.display.print((char)('0' + (plaintext[0]>> 4))); // command value 
     uBit.sleep(300);
 
     // Extract the command from plaintext[0]
