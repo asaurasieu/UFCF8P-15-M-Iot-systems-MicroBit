@@ -21,13 +21,29 @@ void verification(char letter)
 
 void play_tone(uint8_t command)
 {
+    int frequency;
+    
     if (command == 1){
-        uBit.speaker.playTone(r_freq, duration);
+        frequency = r_freq;
     } else if (command == 2){
-        uBit.speaker.playTone(g_freq, duration);
+        frequency = g_freq;
     } else if (command == 3){
-        uBit.speaker.playTone(y_freq, duration);
+        frequency = y_freq;
+    } else {
+        return;
     }
+
+    // Use CODAL Synthesizer for tone playback
+    uBit.audio.playSoundEffect(
+        frequency,      // freq_start (Hz)
+        frequency,      // freq_end (Hz) - same as start for constant tone
+        duration,       // duration (ms)
+        255,            // vol_start (0-255)
+        0,              // vol_end (fade out)
+        3,              // waveform WAVEFORM_SQUARE
+        0,              // fx (no effect)
+        18              // shape SHAPE_LOG
+    );
 }
 
 void turnOFFLEDs()
