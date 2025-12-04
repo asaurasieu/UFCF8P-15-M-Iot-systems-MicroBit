@@ -22,7 +22,7 @@ void play_tone(uint8_t command)
 
     } else if (command == 3){
         frequency = y_freq; 
-    }else {
+    } else {
         return; 
     }
 
@@ -36,7 +36,7 @@ void play_tone(uint8_t command)
 
 void encrypt(uint8_t commandValue)
 {
-    uint8_t salt = {commandValue}; 
+    uint8_t salt[1] = {commandValue}; 
     uint8_t dpk[32]; 
     makeKey(salt, 1, dpk); 
 
@@ -48,6 +48,10 @@ void encrypt(uint8_t commandValue)
     memset(plaintext, 0, 16); 
     plaintext[0] = commandValue; 
 
+    // DEBUG 
+    uBit.display.scroll("ENC");
+    uBit.sleep(300);
+
     // Initialize AES context with dpk 
     struct AES_ctx ctx; 
     AES_init_ctx(&ctx, dpk); 
@@ -57,6 +61,11 @@ void encrypt(uint8_t commandValue)
     memcpy(ciphertext, plaintext, 16); 
     AES_ECB_encrypt(&ctx, ciphertext); 
 
+    // DEBUG
+    uBit.display.scroll("E");
+    uBit.display.print((char) (ciphertext[0]>>4)); 
+    uBit.sleep(300);
+
     PacketBuffer b(17); 
     b[0] = salt[0]; 
 
@@ -64,7 +73,12 @@ void encrypt(uint8_t commandValue)
         b[i + 1] = ciphertext[i]; 
    }
 
+   // DEBUG Sent
     uBit.radio.datagram.send(b); 
+    uBit.display.scroll("TX");
+    uBit.sleep(300); 
+
+
 
     play_tone(commandValue); 
 }

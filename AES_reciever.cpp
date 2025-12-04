@@ -26,11 +26,11 @@ void play_tone(uint8_t command)
         return; 
     }
 
-    uBit.io.P0.setAnalogValue(225); 
-    uBit.io.P0.setAnalogPeriodUs(1000000 / frequency); 
-    uBit.io.P0.setAnalogValue(128); 
+    uBit.io.P1.setAnalogValue(225); 
+    uBit.io.P1.setAnalogPeriodUs(1000000 / frequency); 
+    uBit.io.P1.setAnalogValue(128); 
     uBit.sleep(duration); 
-    uBit.io.P0.setAnalogValue(0); 
+    uBit.io.P1.setAnalogValue(0); 
 }
 
 
@@ -46,6 +46,11 @@ void onData(MicroBitEvent)
     // Recieve encrypted message salt (1) + ciphertext(16)
     PacketBuffer p = uBit.radio.datagram.recv(); 
     
+    // DEBUG Recieved 
+    uBit.display.scroll("RX");
+    uBit.sleep(300);
+
+
     uint8_t salt = p[0]; 
     uint8_t ciphertext[16]; 
 
@@ -61,10 +66,12 @@ void onData(MicroBitEvent)
     // Display the first nibble of the dpk for testing 
     char nibbleSymbol = 'A' + (key[0] & 0x0F); 
     uBit.display.print(nibbleSymbol); 
+
+    // DEBUG Key Regenerated 
+    uBit.display.scroll("KEY"); 
     uBit.sleep(1000);
 
     // Initialize AES context with regenerated DPK 
-    
     struct AES_ctx ctx; 
     AES_init_ctx(&ctx, key); 
 
@@ -73,6 +80,12 @@ void onData(MicroBitEvent)
     uint8_t plaintext[16]; 
     memcpy(plaintext, ciphertext, 16); 
     AES_ECB_decrypt(&ctx, plaintext); 
+
+
+    // DEBUG Show Decryption Completed 
+    uBit.display.scroll("D");
+    uBit.display.print((char)('0' + (plaintext[0]>> 4))) // command value 
+    uBit.sleep(300);
 
     // Extract the command from plaintext[0]
     uint8_t command = plaintext[0]; 
@@ -96,6 +109,13 @@ void onData(MicroBitEvent)
         uBit.io.P2.setDigitalValue(1);
         uBit.display.scroll("Y");
         play_tone(3); 
+    }
+    else
+    {
+        // Show if the command is invalid 
+        uBit.display.scroll("?");
+        uBit.display.print((char)('0' + command)); 
+        uBit.sleep(500); 
     }
 
 }
