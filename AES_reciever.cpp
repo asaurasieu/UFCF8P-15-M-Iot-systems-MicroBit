@@ -8,9 +8,9 @@ MicroBit uBit;
 #define G_FREQ 880
 #define Y_FREQ 1320
 
-#define RED_PIN uBit.io.P8 
-#define GREEN_PIN uBit.io.P1 
-#define YELL_PIN uBit.io.P2 
+#define RED_LED uBit.io.P8 
+#define GREEN_LED uBit.io.P1 
+#define YELL_LED uBit.io.P2 
 
 
 
@@ -27,11 +27,12 @@ void play_tone(int freq, int duration)
      if(freq <= 0 || duration <= 0)
         return;
 
-    int period = 1000000 / freq;
-    YELL_LED.setAnalogPeriodUs(period);
-    YELL_LED.setAnalogValue(512);  
+    uBit.io.speaker.setAnalogPeriodUs(period);
+    uBit.io.speaker.setAnalogValue(512);
+
     uBit.sleep(duration);
-    YELL_LED.setAnalogValue(0);
+
+    uBit.io.speaker.setAnalogValue(0);
 }
 
 /*void play_melody(uint8_t cmd)
@@ -58,18 +59,18 @@ void play_tone(int freq, int duration)
 
 void turnOFFLEDs()
 {
-    RED_PIN.setDigitalValue(0); 
-    GREEN_PIN.setDigitalValue(0); 
-    YELL_PIN.setDigitalValue(0); 
+    RED_LED.setDigitalValue(0); 
+    GREEN_LED.setDigitalValue(0); 
+    YELL_LED.setDigitalValue(0); 
 
-    YELL_pin.setAnalogValue(0);
+    uBit.io.speaker.setAnalogValue(0); 
 }
 
 void turnONLED(uint8_t cmd)
 {
-   if (cmd == 1) RED_PIN.setDigitalValue(1);
-   if (cmd == 2) GREEN_PIN.setDigitalValue(1);
-   if (cmd == 3) YELL_PIN.setDigitalValue(1);
+   if (cmd == 1) RED_LED.setDigitalValue(1);
+   if (cmd == 2) GREEN_LED.setDigitalValue(1);
+   if (cmd == 3) YELL_LED.setDigitalValue(1);
 
 }
 
@@ -120,21 +121,18 @@ void onData(MicroBitEvent)
     {
         turnONLED(1);
         verification('R');
-        uBit.io.P8.setDigitalValue(1);  
         play_tone(toneRed, 150);
     }
     else if (command == 2)
     {
         turnONLED(2);
         verification('G');
-        uBit.io.P1.setDigitalValue(1);    
         play_tone(toneGreen, 150);
     }
     else if (command == 3)
     {
         turnONLED(3);
-        verification('Y');
-        uBit.io.P2.setDigitalValue(1);     
+        verification('Y');  
         play_tone(toneYellow, 150);
     }
     else
