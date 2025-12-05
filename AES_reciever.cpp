@@ -27,6 +27,8 @@ void play_tone(int freq, int duration)
      if(freq <= 0 || duration <= 0)
         return;
 
+    int period = 1000000 / freq; 
+
     uBit.io.speaker.setAnalogPeriodUs(period);
     uBit.io.speaker.setAnalogValue(512);
 
