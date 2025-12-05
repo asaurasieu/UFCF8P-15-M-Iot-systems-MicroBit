@@ -25,12 +25,13 @@ void verification(char letter)
 
 void play_tone(int freq)
 {
-    uBit.audio.enable(); 
-    uBit.audio.setVolume(255);
-    uBit.audio.setFrequency(freq);
+    int period = 1000000 / freq;
+    uBit.io.P0.setAnalogValue(512);
+    uBit.io.P0.setAnalogPeriodUs(period); 
 
     uBit.sleep(duration);
-    uBit.audio.disable(); 
+
+    uBit.io.P0.setAnalogValue(0); 
 
 }
 
@@ -38,21 +39,21 @@ void play_melody(uint8_t cmd)
 {
     if (cmd == 1)
     {
-        play_tone(440); uBit.sleep(120); 
-        play_tone(660); uBit.sleep(120); 
-        play_tone(880); 
+        play_tone(440, 150);
+        play_tone(660, 150);
+        play_tone(880, 200);
     }
     else if (cmd == 2)
     {
-        play_tone(880); uBit.sleep(120); 
-        play_tone(660); uBit.sleep(120); 
-        play_tone(440); 
+       play_tone(880, 150);
+       play_tone(660, 150);
+       play_tone(440, 200);
     }
     else if (cmd == 3)
     {
-        play_tone(1320); uBit.sleep(120); 
-        play_tone(990); uBit.sleep(120); 
-        play_tone(660); 
+        play_tone(660, 150);
+        play_tone(880, 150);
+        play_tone(1320, 200);
     }
 }
 
@@ -140,15 +141,15 @@ void onData(MicroBitEvent)
 int main()
 {
     uBit.init(); 
-    uBit.audio.enable(); 
-    uBit.radio.setGroup(1); 
-    uBit.audio.setVolume(255);
-
+    
     uBit.radio.enable();
-    uBit.messageBus.listen(MICROBIT_ID_RADIO, MICROBIT_RADIO_EVT_DATAGRAM, onData);
+    uBit.radio.setGroup(1); 
    
-
     turnOFFLEDs(); 
+
+    
+    uBit.messageBus.listen(MICROBIT_ID_RADIO, MICROBIT_RADIO_EVT_DATAGRAM, onData);
+
 
     while (1)
         uBit.sleep(1000);

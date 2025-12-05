@@ -29,5 +29,5 @@ Light-MD5 (Key Generation MD5)
 https://github.com/michelerenzullo/Light-MD5
 
 
-Sound MicroBit documentation 
-https://microbit-micropython.readthedocs.io/en/v2-docs/speaker.html 
+Sound and  Melody from Lancaster Library 
+https://lancaster-university.github.io/microbit-docs/ubit/compass/#setperiod
