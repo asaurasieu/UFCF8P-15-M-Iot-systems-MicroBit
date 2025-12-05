@@ -28,10 +28,10 @@ void play_tone(int freq, int duration)
         return;
 
     int period = 1000000 / freq;
-    YEL_LED.setAnalogPeriodUs(period);
-    YEL_LED.setAnalogValue(512);  
+    YELL_LED.setAnalogPeriodUs(period);
+    YELL_LED.setAnalogValue(512);  
     uBit.sleep(duration);
-    YEL_LED.setAnalogValue(0);
+    YELL_LED.setAnalogValue(0);
 }
 
 /*void play_melody(uint8_t cmd)
@@ -121,21 +121,21 @@ void onData(MicroBitEvent)
         turnONLED(1);
         verification('R');
         uBit.io.P8.setDigitalValue(1);  
-        playTone(toneRed, 150);
+        play_tone(toneRed, 150);
     }
     else if (command == 2)
     {
         turnONLED(2);
         verification('G');
         uBit.io.P1.setDigitalValue(1);    
-        playTone(toneGreen, 150);
+        play_tone(toneGreen, 150);
     }
     else if (command == 3)
     {
         turnONLED(3);
         verification('Y');
         uBit.io.P2.setDigitalValue(1);     
-        playTone(toneYellow, 150);
+        play_tone(toneYellow, 150);
     }
     else
     {
