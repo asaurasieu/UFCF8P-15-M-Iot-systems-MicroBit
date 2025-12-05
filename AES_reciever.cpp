@@ -24,18 +24,17 @@ void verification(char letter)
 
 void play_tone(int freq, int duration)
 {
+     if(freq <= 0 || duration <= 0)
+        return;
+
     int period = 1000000 / freq;
-    
-    uBit.io.P0.setAnalogValue(512);
-    uBit.io.P0.setAnalogPeriodUs(period); 
-
+    YEL_LED.setAnalogPeriodUs(period);
+    YEL_LED.setAnalogValue(512);  
     uBit.sleep(duration);
-
-    uBit.io.P0.setAnalogValue(0); 
-
+    YEL_LED.setAnalogValue(0);
 }
 
-void play_melody(uint8_t cmd)
+/*void play_melody(uint8_t cmd)
 {
     if (cmd == 1)
     {
@@ -55,13 +54,15 @@ void play_melody(uint8_t cmd)
         play_tone(880, 150);
         play_tone(1320, 200);
     }
-}
+}*/
 
 void turnOFFLEDs()
 {
     RED_PIN.setDigitalValue(0); 
     GREEN_PIN.setDigitalValue(0); 
     YELL_PIN.setDigitalValue(0); 
+
+    YELL_pin.setAnalogValue(0);
 }
 
 void turnONLED(uint8_t cmd)
@@ -110,27 +111,31 @@ void onData(MicroBitEvent)
     uint8_t command = plaintext[0];
 
     turnOFFLEDs(); 
+    
+    int toneRed    = 600;
+    int toneGreen  = 900;
+    int toneYellow = 1200;
 
     if (command == 1)
     {
         turnONLED(1);
         verification('R');
-        play_tone(R_FREQ, 200);
-        play_melody(1);
+        uBit.io.P8.setDigitalValue(1);  
+        playTone(toneRed, 150);
     }
     else if (command == 2)
     {
         turnONLED(2);
         verification('G');
-        play_tone(G_FREQ, 200);
-        play_melody(2);
+        uBit.io.P1.setDigitalValue(1);    
+        playTone(toneGreen, 150);
     }
     else if (command == 3)
     {
         turnONLED(3);
         verification('Y');
-        play_tone(Y_FREQ, 200);
-        play_melody(3);
+        uBit.io.P2.setDigitalValue(1);     
+        playTone(toneYellow, 150);
     }
     else
     {
@@ -141,10 +146,6 @@ void onData(MicroBitEvent)
 int main()
 {
     uBit.init(); 
-
-    uBit.audio.enable(); 
-    uBit.audio.setSpeakerEnabled(true); 
-    uBit.audio.setPinEnabled(true); 
     
     uBit.radio.enable();
     uBit.radio.setGroup(1); 
