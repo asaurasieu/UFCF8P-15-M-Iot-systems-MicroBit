@@ -4,9 +4,9 @@
 
 MicroBit uBit; 
 
-#define r_freq 440
-#define g_freq 880
-#define y_freq 1320
+#define R_FREQ 440
+#define G_FREQ 880
+#define Y_FREQ 1320
 
 #define RED_PIN uBit.io.P8 
 #define GREEN_PIN uBit.io.P1 
@@ -115,21 +115,21 @@ void onData(MicroBitEvent)
     {
         turnONLED(1);
         verification('R');
-        play_tone(r_freq);
+        play_tone(R_FREQ, 200);
         play_melody(1);
     }
     else if (command == 2)
     {
         turnONLED(2);
         verification('G');
-        play_tone(g_freq);
+        play_tone(G_FREQ, 200);
         play_melody(2);
     }
     else if (command == 3)
     {
         turnONLED(3);
         verification('Y');
-        play_tone(y_freq);
+        play_tone(Y_FREQ, 200);
         play_melody(3);
     }
     else
