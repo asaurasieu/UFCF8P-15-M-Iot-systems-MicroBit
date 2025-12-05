@@ -14,10 +14,10 @@ MicroBit uBit;
 
 
 
-void verification(char letter)
+void verification(char letter, int duration = 200)
 {
     uBit.display.print(letter); 
-    uBit.sleep(200); 
+    uBit.sleep(duration); 
 }
 
 
@@ -37,7 +37,7 @@ void play_tone(int freq, int duration)
     uBit.io.speaker.setAnalogValue(0);
 }
 
-/*void play_melody(uint8_t cmd)
+void play_melody(uint8_t cmd)
 {
     if (cmd == 1)
     {
@@ -57,7 +57,7 @@ void play_tone(int freq, int duration)
         play_tone(880, 150);
         play_tone(1320, 200);
     }
-}*/
+}
 
 void turnOFFLEDs()
 {
@@ -105,9 +105,9 @@ void onData(MicroBitEvent)
     uint8_t key[32];
     char nibble;
     generate_key(salt, key, &nibble);
-    verification(nibble);
 
-    verification('D');
+    verification(nibble, 400);
+
     uint8_t plaintext[16]; 
     decrypt_command(ciphertext, key, plaintext);
 
@@ -124,22 +124,28 @@ void onData(MicroBitEvent)
         turnONLED(1);
         verification('R');
         play_tone(toneRed, 150);
+        play_melody(1);
     }
     else if (command == 2)
     {
         turnONLED(2);
         verification('G');
         play_tone(toneGreen, 150);
+        play_melody(2);
     }
     else if (command == 3)
     {
         turnONLED(3);
         verification('Y');  
         play_tone(toneYellow, 150);
+        play_melody(3); 
     }
     else
     {
         verification('F');
+
+        uBit.display.print("OK");
+        uBit.sleep(300); 
     }
 }
 
