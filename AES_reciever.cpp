@@ -7,7 +7,6 @@ MicroBit uBit;
 #define r_freq 440
 #define g_freq 880
 #define y_freq 1320
-#define duration 500 
 
 #define RED_PIN uBit.io.P8 
 #define GREEN_PIN uBit.io.P1 
@@ -23,9 +22,10 @@ void verification(char letter)
 
 
 
-void play_tone(int freq)
+void play_tone(int freq, int duration)
 {
     int period = 1000000 / freq;
+    
     uBit.io.P0.setAnalogValue(512);
     uBit.io.P0.setAnalogPeriodUs(period); 
 
