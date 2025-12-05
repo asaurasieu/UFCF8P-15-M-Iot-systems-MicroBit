@@ -11,7 +11,7 @@ MicroBit uBit;
 
 #define RED_PIN uBit.io.P8 
 #define GREEN_PIN uBit.io.P1 
-#define Yell_PIN uBit.io.P2 
+#define YELL_PIN uBit.io.P2 
 
 
 
@@ -23,19 +23,15 @@ void verification(char letter)
 
 
 
-void play_tone(int frequency)
+void play_tone(int freq)
 {
-    
-    MicroBitSoundEffect fx(
-        frequency, 
-        frequency, 
-        duration, 
-        255, 
-        255, 
-        Waveform::SINE 
-    ); 
+    uBit.audio.enable(); 
+    uBit.audio.setVolume(255);
+    uBit.audio.setFrequency(freq);
 
-    uBit.sound.play(fx);
+    uBit.sleep(duration);
+    uBit.audio.disable(); 
+
 }
 
 void play_melody(uint8_t cmd)
@@ -64,14 +60,14 @@ void turnOFFLEDs()
 {
     RED_PIN.setDigitalValue(0); 
     GREEN_PIN.setDigitalValue(0); 
-    Yell_PIN.setDigitalValue(0); 
+    YELL_PIN.setDigitalValue(0); 
 }
 
 void turnONLED(uint8_t cmd)
 {
    if (cmd == 1) RED_PIN.setDigitalValue(1);
    if (cmd == 2) GREEN_PIN.setDigitalValue(1);
-   if (cmd == 3) YEL_PIN.setDigitalValue(1);
+   if (cmd == 3) YELL_PIN.setDigitalValue(1);
 
 }
 
