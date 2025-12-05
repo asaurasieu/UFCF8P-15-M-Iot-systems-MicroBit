@@ -141,6 +141,10 @@ void onData(MicroBitEvent)
 int main()
 {
     uBit.init(); 
+
+    uBit.audio.enable(); 
+    uBit.audio.setSpeakerEnabled(true); 
+    uBit.audio.setPinEnabled(true); 
     
     uBit.radio.enable();
     uBit.radio.setGroup(1); 
