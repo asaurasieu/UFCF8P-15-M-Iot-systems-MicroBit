@@ -94,6 +94,7 @@ int main()
 {
     uBit.init();
     uBit.radio.enable();
+    uBit.radio.setGroup(1); 
 
     uBit.buttonA.setEventConfiguration(MICROBIT_BUTTON_ALL_EVENTS);
     uBit.buttonB.setEventConfiguration(MICROBIT_BUTTON_ALL_EVENTS);
@@ -111,25 +112,3 @@ int main()
 }
 
 
-// ============================================
-// FLOW:
-// ============================================
-// 1. Press Button A (click) -> Command 1 (Red)
-// 2. Press Button A (long) -> Command 3 (Yellow)
-// 3. Press Button B (click) -> Command 2 (Green)
-//
-// For each command:
-//   1. Generate DPK = SHA256(secret) + MD5(salt)
-//   2. Display DPK nibble (A-P)
-//   3. Create plaintext: [command, 0x00, 0x00, ..., 0x00]
-//   4. Encrypt with AES-128 ECB using DPK[0:16]
-//   5. Send: [salt (1)] + [ciphertext (16)] = 17 bytes
-//   6. Play distinctive tone (440/880/1320 Hz)
-//   7. Display command letter (R/G/Y)
-//
-// Expected output at receiver:
-//   1. Receiver shows SAME DPK nibble (proves key sync)
-//   2. Receiver shows command letter
-//   3. Receiver turns on corresponding LED
-//   4. Receiver plays same tone
-// ============================================
