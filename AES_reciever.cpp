@@ -97,6 +97,7 @@ void onData(MicroBitEvent)
     // Recieve encrypted message salt (1) + ciphertext(16)
     PacketBuffer p = uBit.radio.datagram.recv(); 
     verification('R');
+    uBit.sleep(1000);
 
     uint8_t salt = p[0]; 
     uint8_t ciphertext[16]; 
@@ -106,7 +107,7 @@ void onData(MicroBitEvent)
     char nibble;
     generate_key(salt, key, &nibble);
 
-    verification(nibble, 400);
+    verification(nibble, 1000);
 
     uint8_t plaintext[16]; 
     decrypt_command(ciphertext, key, plaintext);

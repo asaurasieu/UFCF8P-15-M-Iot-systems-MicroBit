@@ -14,8 +14,8 @@ void verification(char letter)
 
 void generate_key(uint8_t salt, uint8_t dpk[32], char* nibble)
 {
-    uint8_t salt[1] = {salt}; 
-    makeKey(salt, 1, dpk); 
+    uint8_t salt_buf[1] = {salt}; 
+    makeKey(salt_buf, 1, dpk); 
     *nibble = 'A' + (dpk[0] & 0x0F); 
 }
 
@@ -50,18 +50,21 @@ void send_message(uint8_t salt, uint8_t ciphertext[16])
 
 void encrypt(uint8_t commandValue)
 {
-    uint8_t salt = (uint8_t)uBit.random(256)
+    uint8_t salt = (uint8_t)uBit.random(256);
 
     uint8_t dpk[32];
     char nibble;
     generate_key(salt, dpk, &nibble);
     verification(nibble);
+    uBit.sleep(1000);
 
     verification('E');  // Encryption
+    uBit.sleep(1000);
     uint8_t ciphertext[16];
     encrypt_command(commandValue, ciphertext, dpk);
 
     verification('T');  // Transmit
+    uBit.sleep(1000);
     send_message(salt, ciphertext); // send the salt and the ciphertext
 }
 
