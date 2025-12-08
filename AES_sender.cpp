@@ -12,9 +12,9 @@ void verification(char letter)
 }
 
 
-void generate_key(uint8_t commandValue, uint8_t dpk[32], char* nibble)
+void generate_key(uint8_t salt, uint8_t dpk[32], char* nibble)
 {
-    uint8_t salt[1] = {commandValue}; 
+    uint8_t salt[1] = {salt}; 
     makeKey(salt, 1, dpk); 
     *nibble = 'A' + (dpk[0] & 0x0F); 
 }
@@ -35,10 +35,10 @@ void encrypt_command(uint8_t commandValue, uint8_t ciphertext[16], uint8_t dpk[3
     AES_ECB_encrypt(&ctx, ciphertext); 
 }
 
-void send_message(uint8_t commandValue, uint8_t ciphertext[16])
+void send_message(uint8_t salt, uint8_t ciphertext[16])
 {
     PacketBuffer b(17); 
-    b[0] = commandValue; 
+    b[0] = salt;  // first byte is the salt
 
     for (int i = 0; i < 16; i++){
         b[i + 1] = ciphertext[i]; 
@@ -50,9 +50,11 @@ void send_message(uint8_t commandValue, uint8_t ciphertext[16])
 
 void encrypt(uint8_t commandValue)
 {
+    uint8_t salt = (uint8_t)uBit.random(256)
+
     uint8_t dpk[32];
     char nibble;
-    generate_key(commandValue, dpk, &nibble);
+    generate_key(salt, dpk, &nibble);
     verification(nibble);
 
     verification('E');  // Encryption
@@ -60,7 +62,7 @@ void encrypt(uint8_t commandValue)
     encrypt_command(commandValue, ciphertext, dpk);
 
     verification('T');  // Transmit
-    send_message(commandValue, ciphertext);
+    send_message(salt, ciphertext); // send the salt and the ciphertext
 }
 
 void onButtonA(MicroBitEvent e)
@@ -93,6 +95,7 @@ void onButtonB(MicroBitEvent e)
 int main()
 {
     uBit.init();
+    uBit.seedRandom(uBit.random(0x7fffffff));
     uBit.radio.enable();
     uBit.radio.setGroup(1); 
 
