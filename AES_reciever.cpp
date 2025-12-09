@@ -145,7 +145,7 @@ void onData(MicroBitEvent)
     {
         verification('F');
 
-        uBit.display.print("OK");
+        uBit.display.print("OK"); // remove 
         uBit.sleep(300); 
     }
 }

@@ -1,0 +1,33 @@
+Place the following files into the microbit-v2-samples source folder. Only swap in the AES_* files for the appropriate sender/receiver build.
+
+Files and purpose
+DPK.cpp              // Derives the 32-byte key deterministically from salt + shared secret
+DPK.h                // Header for the key-derivation functions
+picosha2.h           // Header-only SHA-256 used by DPK
+lightMD5.cpp         // Lightweight MD5 implementation (helper for DPK)
+lightMD5.h           // Header for the MD5 helper
+aes.c                // Tiny-AES core implementation
+aes.h                // Tiny-AES declarations (ctx, AES_ECB_encrypt/decrypt, etc.)
+aes_wrapper.cpp      // C++ bridge so the C AES code links cleanly
+AES_sender.cpp       // Application that encrypts and transmits commands
+AES_reciever.cpp     // Application that receives, decrypts, and acts on commands
+
+Build and flash
+1) Build normally: python build.py
+2) Copy MICROBIT.hex to the micro:bit to flash it.
+
+Shared between Sender & Reciever: 
+
+1. SHARED_SECRET = "IOT2026" 
+2. DPK ALGORITHM 
+3. AES ALGORITHM 
+4. RANDOM SALT PER MESSAGE 
+
+If the receiver DPK is correct, the sender DPK will match exactly. 
+
+
+THE EXPECTED RESULTS WOULD BE THAT: 
+SENDER SHOWS: SOME LETTER -> e.g K 
+RECEIVER SHOWS: THE SAME LETTER -> e.g K 
+
+This proves that both the same shared secret, salt, sha256, md5, DPK and key derivation works correctly on both devices. 

@@ -29,3 +29,7 @@ https://lancaster-university.github.io/microbit-docs/ubit/io/#setanalogvalue
 https://lancaster-university.github.io/microbit-docs/ubit/compass/#setperiod
 
 
+DPK key generation 
+Key generation was build using the diagram provided by the teacher in the assesment documentation. 
+https://www.geeksforgeeks.org/cpp/how-to-convert-hex-string-to-byte-array-in-cpp/ 
+https://www.sanfoundry.com/cpp-program-illustrate-bitwise-operators/ 

@@ -58,7 +58,7 @@ void encrypt(uint8_t commandValue)
     verification(nibble);
     uBit.sleep(1000);
 
-    verification('E');  // Encryption
+    verification('E');  // Encryption // remove 
     uBit.sleep(1000);
     uint8_t ciphertext[16];
     encrypt_command(commandValue, ciphertext, dpk);
@@ -116,5 +116,8 @@ int main()
     return 0; 
 
 }
+
+
+// Add more visualization to the commands so that it shows when it was recieved, encrypted and decrypted. 
 
 
