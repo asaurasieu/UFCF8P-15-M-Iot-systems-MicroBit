@@ -1,0 +1,112 @@
+TEST PLAN: IDS + Sender + Receiver (Spam Attack)
+Goal: Show that your IDS detects normal packets and flood packets.
+ STEP 1 — Flash all 3 Micro:bits
+Micro:bit #1 — Sender
+
+Flash your normal sender firmware:
+
+AES_sender.hex
+
+Micro:bit #2 — Receiver
+
+Flash your receiver firmware:
+
+AES_reciever.hex
+
+Micro:bit #3 — IDS
+
+Flash your new IDS firmware:
+
+MICROBIT.hex   (the one built today)
+
+ STEP 2 — Power all Micro:bits
+
+After flashing, just power them all on:
+
+Sender shows whatever your group programmed
+
+Receiver waits for encrypted packets
+
+IDS scrolls “IDS” and waits silently
+
+This means all 3 devices are ready.
+
+ STEP 3 — Test NORMAL traffic (baseline)
+
+Press the send button on the Sender (usually button A).
+
+Receiver should react (show decrypted LED pattern).
+
+IDS should blink a little dot:
+
+.
+
+
+Repeat a few times:
+
+Sender → sends packet
+
+Receiver → displays
+
+IDS → prints .
+
+This confirms radio group is correct and the system is working.
+
+ STEP 4 — Test FLOOD / SPAM attack
+Method: Hold the Sender Button
+
+ “Hold down button B and don’t release.”
+
+What happens:
+
+On Sender
+
+It keeps sending packets rapidly.
+
+On Receiver
+
+Packets will arrive too fast — maybe laggy or skipping.
+
+On IDS
+
+You should see:
+
+F   F   F
+
+
+or a flashing F multiple times.
+
+This means:
+
+Packet rate > FLOOD_THRESHOLD
+
+IDS is successfully detecting a flood attack
+
+This is your main test result 
+
+Ask one teammate to take a picture or video — perfect for the report.
+
+ STEP 5 — Observe Serial Log (optional but good for report)
+
+Connect IDS Micro:bit to laptop with USB.
+
+Open a serial terminal:
+
+minicom -D /dev/ttyACM0
+
+
+or
+
+screen /dev/ttyACM0 115200
+
+
+During normal presses you will see lines like:
+
+pkt=5 len=17 sus=0 flood=0
+pkt=6 len=17 sus=0 flood=0
+
+
+During flood:
+
+pkt=52 len=17 sus=1 flood=1
+pkt=53 len=17 sus=1 flood=1
