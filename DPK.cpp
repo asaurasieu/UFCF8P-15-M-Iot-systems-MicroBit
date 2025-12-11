@@ -7,7 +7,7 @@
 #include <vector> 
 #include <string> 
 
-// Shared secret used for key derivation - must be the same on both sender and receiver
+// Shared secret used for key generation - must be the same on both sender and receiver
 const uint8_t SHARED_SECRET[] = "IOT2026"; 
 
 // Converts a single hexadecimal character to its numeric value (0-15)
@@ -34,7 +34,7 @@ void hexToBytes(const std::string &hex, uint8_t *output, size_t count)
 
 void makeKey(const uint8_t *salt, size_t saltLen, uint8_t key[32])
 {
-    // Temporary buffers for key derivation steps
+    // Temporary buffers for key generation steps
     uint8_t secretHash[32];  // SHA-256 hash of the shared secret
     uint8_t K1[16];          // First 16 bytes of secretHash
     uint8_t K12[16];         // Last 16 bytes of secretHash

@@ -22,14 +22,14 @@ void generate_key(uint8_t salt, uint8_t dpk[32], char* nibble)
 // Encrypts the command value using AES-256 ECB mode
 // commandValue: The command to encrypt (1=RED, 2=GREEN, 3=YELLOW)
 // ciphertext: Output buffer for the 16-byte encrypted result
-// dpk: 32-byte Derived Private Key used for encryption
+// dpk: 32-byte Generated Private Key used for encryption
 void encrypt_command(uint8_t commandValue, uint8_t ciphertext[16], uint8_t dpk[32])
 {
     uint8_t plaintext[16]; 
     memset(plaintext, 0, 16); 
     plaintext[0] = commandValue; 
 
-    // Initialize AES context with the 32-byte derived key
+    // Initialize AES context with the 32-byte generated key
     struct AES_ctx ctx; 
     AES_init_ctx(&ctx, dpk); 
 
@@ -59,11 +59,11 @@ void send_message(uint8_t salt, uint8_t ciphertext[16])
 // Main encryption function: generates the salt, derives the key, encrypts the command, and sends it
 void encrypt(uint8_t commandValue)
 {
-    // Generate a random 1-byte salt (0-255) for this message
+    // Generates a random 1-byte salt (0-255) for the message 
     // Each message uses a unique salt to ensure unique encryption keys
     uint8_t salt = (uint8_t)uBit.random(256);
 
-    // Derive the 32-byte AES-256 key from the salt
+    // Generate the 32-byte AES-256 key from the salt
     uint8_t dpk[32];
     char nibble;
     generate_key(salt, dpk, &nibble);
@@ -72,7 +72,7 @@ void encrypt(uint8_t commandValue)
     uBit.display.scroll("KEY");
     uBit.sleep(1000);
     
-    // Show the nibble letter (A-P) for verification that both devices derived the same key
+    // Show the nibble letter (A-P) for verification that both devices generated the same key
     verification(nibble);
     uBit.sleep(1000);
     

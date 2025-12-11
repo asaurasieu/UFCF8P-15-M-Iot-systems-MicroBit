@@ -28,7 +28,7 @@ void play_tone(int freq, int duration)
     if(freq <= 0 || duration <= 0)
         return;
 
-    // Calculate period in microseconds (1 second = 1,000,000 microseconds)
+    // Calculates period in microseconds (1 second = 1,000,000 microseconds)
     int period = 1000000 / freq; 
 
     uBit.io.speaker.setAnalogPeriodUs(period);
@@ -82,29 +82,28 @@ void turnONLED(uint8_t cmd)
 
 }
 
-// Generates a 32-byte Derived Private Key (DPK) from a salt value
+// Generates a 32-byte generated Private Key (DPK) from a the salt value
 // Also extracts a nibble (4 bits) from the key for visual verification
-
 void generate_key(uint8_t salt, uint8_t dpk[32], char* nibble)
 {
     // Convert single byte salt to buffer format for makeKey function
     uint8_t salt_buf[1] = {salt}; 
 
-    // Derive the 32-byte AES-256 key from the salt using the shared secret
+    // Generate the 32-byte AES-256 key from the salt using the shared secret
     makeKey(salt_buf, 1, dpk);
 
-    // This provides a visual check that key derivation worked correctly
+    // This provides a visual check that key generation worked correctly
     *nibble = 'A' + (dpk[0] & 0x0F);
 }
 
 // Decrypts a 16-byte ciphertext using AES-256 ECB mode
 // ciphertext: 16-byte encrypted data received from sender
-// dpk: 32-byte Derived Private Key (must match the key used for encryption)
+// dpk: 32-byteGenerated Private Key (must match the key used for encryption)
 // plaintext: Output buffer for the 16-byte decrypted result
 
 void decrypt_command(uint8_t ciphertext[16], uint8_t dpk[32], uint8_t plaintext[16])
 {
-    // Initialize AES context with the 32-byte derived key
+    // Initialize AES context with the 32-byte generated key
     struct AES_ctx ctx; 
     AES_init_ctx(&ctx, dpk); 
     
@@ -133,11 +132,11 @@ void onData(MicroBitEvent)
     char nibble;
     generate_key(salt, dpk, &nibble);
 
-    // Show key derived: scroll "KEY" message
+    // Show key generated: scroll "KEY" message
     uBit.display.scroll("KEY");
     uBit.sleep(1000);
     
-    // Show the nibble letter (A-P) for verification that both devices derived the same key
+    // Show the nibble letter (A-P) for verification that both devices generated the same key
     verification(nibble, 1000);
 
     // Decrypt the ciphertext to get the original command

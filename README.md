@@ -46,7 +46,7 @@ Uses the event-driven micro:bit runtime (Lancaster University) and the MicroBit 
 ## Encryption overview
 
 - Algorithm: AES-256 ECB (tiny-AES-c).
-- Key derivation: a 1-byte random salt is generated per message on the sender; `makeKey` derives a 32-byte derived private key (DPK) from that salt. The receiver uses the same salt to derive the identical key.
+- Key generation: a 1-byte random salt is generated per message on the sender; `makeKey` derives a 32-byte derived private key (DPK) from that salt. The receiver uses the same salt to derive the identical key.
 - Payload: the command byte is placed in `plaintext[0]`, padded with zeros to 16 bytes, then encrypted.
 - Packet format (17 bytes total): byte 0 = salt (plaintext); bytes 1–16 = AES ciphertext.
 - Flow:
@@ -59,4 +59,4 @@ This design ensures each message uses a fresh key (random salt) while keeping th
 
 - tiny-AES-c (`tiny-AES-c/`): lightweight AES-256 implementation used for encrypting and decrypting the 16-byte command block (ECB mode).
 - Light MD5 (`Light-MD5/`): small MD5 library used for generating the derived private key (DPK) in `DPK.cpp`.
-- PicoSha2 (`PicoSHA2/`): header-only SHA-256 implementation, used in `makeKey` to compute the SHA-256 hash as the first stage of key derivation.
+- PicoSha2 (`PicoSHA2/`): header-only SHA-256 implementation, used in `makeKey` to compute the SHA-256 hash as the first stage of key generation.
