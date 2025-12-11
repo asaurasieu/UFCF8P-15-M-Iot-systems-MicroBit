@@ -123,6 +123,16 @@ void onData(MicroBitEvent)
     uBit.display.scroll("RECEIVED");
     uBit.sleep(1000);
 
+    // Retrieve the incoming radio packet (salt + 16-byte ciphertext)
+    PacketBuffer p = uBit.radio.datagram.recv();
+
+    // Basic validation: expect 17 bytes (1 salt + 16 ciphertext)
+    if (p.length() < 17)
+    {
+        uBit.display.scroll("ERR");
+        return;
+    }
+
     uint8_t salt = p[0]; 
     uint8_t ciphertext[16]; 
     memcpy(ciphertext, p.getBytes() + 1, 16);
