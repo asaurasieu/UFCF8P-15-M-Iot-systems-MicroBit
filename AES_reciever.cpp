@@ -8,12 +8,12 @@ MicroBit uBit;
 #define G_FREQ 880
 #define Y_FREQ 1320
 
+// LED pin definitions
 #define RED_LED uBit.io.P8 
 #define GREEN_LED uBit.io.P1 
 #define YELL_LED uBit.io.P2 
 
-
-
+// Displays a verification letter on the MicroBit LED matrix
 void verification(char letter, int duration = 200)
 {
     uBit.display.print(letter); 
@@ -24,9 +24,11 @@ void verification(char letter, int duration = 200)
 
 void play_tone(int freq, int duration)
 {
-     if(freq <= 0 || duration <= 0)
+    // Validate input parameters
+    if(freq <= 0 || duration <= 0)
         return;
 
+    // Calculate period in microseconds (1 second = 1,000,000 microseconds)
     int period = 1000000 / freq; 
 
     uBit.io.speaker.setAnalogPeriodUs(period);
@@ -37,6 +39,7 @@ void play_tone(int freq, int duration)
     uBit.io.speaker.setAnalogValue(0);
 }
 
+// Plays a distinct melody based on the received command
 void play_melody(uint8_t cmd)
 {
     if (cmd == 1)
@@ -59,6 +62,8 @@ void play_melody(uint8_t cmd)
     }
 }
 
+// Turns off all LEDs and stops the speaker
+// Called before activating a new LED to ensure only one is on at a time
 void turnOFFLEDs()
 {
     RED_LED.setDigitalValue(0); 
@@ -68,6 +73,7 @@ void turnOFFLEDs()
     uBit.io.speaker.setAnalogValue(0); 
 }
 
+// Turns on the LED corresponding to the command
 void turnONLED(uint8_t cmd)
 {
    if (cmd == 1) RED_LED.setDigitalValue(1);
@@ -76,42 +82,73 @@ void turnONLED(uint8_t cmd)
 
 }
 
-void generate_key(uint8_t salt_value, uint8_t key[32], char* nibble)
+// Generates a 32-byte Derived Private Key (DPK) from a salt value
+// Also extracts a nibble (4 bits) from the key for visual verification
+
+void generate_key(uint8_t salt, uint8_t dpk[32], char* nibble)
 {
-    uint8_t salt_buf[1] = {salt_value}; 
-    makeKey(salt_buf, 1, key);
-    *nibble = 'A' + (key[0] & 0x0F);
+    // Convert single byte salt to buffer format for makeKey function
+    uint8_t salt_buf[1] = {salt}; 
+
+    // Derive the 32-byte AES-256 key from the salt using the shared secret
+    makeKey(salt_buf, 1, dpk);
+
+    // This provides a visual check that key derivation worked correctly
+    *nibble = 'A' + (dpk[0] & 0x0F);
 }
 
-void decrypt_command(uint8_t ciphertext[16], uint8_t key[32], uint8_t plaintext[16])
+// Decrypts a 16-byte ciphertext using AES-256 ECB mode
+// ciphertext: 16-byte encrypted data received from sender
+// dpk: 32-byte Derived Private Key (must match the key used for encryption)
+// plaintext: Output buffer for the 16-byte decrypted result
+
+void decrypt_command(uint8_t ciphertext[16], uint8_t dpk[32], uint8_t plaintext[16])
 {
+    // Initialize AES context with the 32-byte derived key
     struct AES_ctx ctx; 
-    AES_init_ctx(&ctx, key); 
+    AES_init_ctx(&ctx, dpk); 
+    
+    // Copy ciphertext to plaintext buffer 
     memcpy(plaintext, ciphertext, 16); 
+    
+    // Decrypt using AES-256 ECB mode
     AES_ECB_decrypt(&ctx, plaintext);
 }
 
 
+// Event handler called when a radio message is received
+// Packet format: [salt (1 byte)] + [ciphertext (16 bytes)] = 17 bytes total
 void onData(MicroBitEvent)
 {
-    // Recieve encrypted message salt (1) + ciphertext(16)
-    PacketBuffer p = uBit.radio.datagram.recv(); 
-    verification('R');
+    // Show received: scroll "RECEIVED" message
+    uBit.display.scroll("RECEIVED");
     uBit.sleep(1000);
 
     uint8_t salt = p[0]; 
     uint8_t ciphertext[16]; 
     memcpy(ciphertext, p.getBytes() + 1, 16);
 
-    uint8_t key[32];
+    // Get the 32-byte AES-256 key using the same salt and shared secret as sender
+    uint8_t dpk[32];
     char nibble;
-    generate_key(salt, key, &nibble);
+    generate_key(salt, dpk, &nibble);
 
+    // Show key derived: scroll "KEY" message
+    uBit.display.scroll("KEY");
+    uBit.sleep(1000);
+    
+    // Show the nibble letter (A-P) for verification that both devices derived the same key
     verification(nibble, 1000);
 
+    // Decrypt the ciphertext to get the original command
     uint8_t plaintext[16]; 
-    decrypt_command(ciphertext, key, plaintext);
+    decrypt_command(ciphertext, dpk, plaintext);
 
+    // Show decrypted: scroll "DECRYPT" message
+    uBit.display.scroll("DECRYPT");
+    uBit.sleep(1000);
+
+    // Extract command from first byte of plaintext
     uint8_t command = plaintext[0];
 
     turnOFFLEDs(); 
@@ -143,9 +180,8 @@ void onData(MicroBitEvent)
     }
     else
     {
-        verification('F');
-
-        uBit.display.print("OK"); // remove 
+        verification('F');  
+        uBit.display.print("OK");
         uBit.sleep(300); 
     }
 }
@@ -157,6 +193,7 @@ int main()
     uBit.radio.enable();
     uBit.radio.setGroup(1); 
    
+    // Ensures all LEDs and speaker are off at startup
     turnOFFLEDs(); 
 
     
